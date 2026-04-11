@@ -1,19 +1,36 @@
-🚢 Supply Chain Delay Dashboard
-📌 Overview
+# Supply Chain Delay Dashboard
 
-This project analyzes shipment data to identify delay patterns and carrier performance.
+## Overview
 
-📊 Key Features
-Calculate delay days using ETA vs ATA
-Identify delay rate (>3 days)
-Analyze carrier performance
-Interactive dashboard (Streamlit)
-🔍 Key Insights
-~18% of shipments experience severe delays
-COSCO shows the highest average delay
-Delay patterns vary significantly by carrier
-⚙️ Tech Stack
-Python (pandas)
-Streamlit
-▶️ Run the app
+This project analyzes shipment data to identify delay patterns and carrier performance using Python and Streamlit.
+
+## Features
+
+* Calculate shipment delay days using ETA vs. ATA
+* Track severe delay rate for shipments delayed more than 3 days
+* Compare average delay across carriers
+* Explore results through an interactive Streamlit dashboard
+
+## Key Insights
+
+* About 18% of shipments fall into the severe delay category
+* COSCO shows the highest average delay in the sample analysis
+* Delay performance varies by carrier
+
+## Tech Stack
+
+* Python
+* pandas
+* Streamlit
+
+## Data Note
+
+The original business dataset is not included in this repository for confidentiality reasons. This project is shared as a public portfolio example without proprietary company data.
+
+## Run Locally
+
+```bash
+pip install -r requirements.txt
 streamlit run app.py
+```
+

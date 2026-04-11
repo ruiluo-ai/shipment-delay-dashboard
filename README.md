@@ -17,5 +17,3 @@ Python (pandas)
 Streamlit
 ▶️ Run the app
 streamlit run app.py
-
-👉 This README = interview weapon

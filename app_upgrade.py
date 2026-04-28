@@ -1,6 +1,10 @@
+from dotenv import load_dotenv
+load_dotenv()
 import streamlit as st
 import pandas as pd
-
+import os
+from openai import OpenAI
+client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 st.title("🚢 Supply Chain Dashboard")
 
 #step4-load your data
@@ -27,11 +31,57 @@ df =df.dropna(subset=["delay_days"])
 
 carrier = st.selectbox("Select Carrier",["All"]+list(df["carrier"].unique()))
 
+#df_all-->full dataset
+#df_filtered -->selected carrier
+df_all = df.copy()
+
 if carrier != "All":
-    df = df[df["carrier"] == carrier]
+    df_filtered = df[df["carrier"] == carrier]
+else:
+    df_filtered = df
 
 st.write(f"Showing data for: {carrier}")
+def generate_ai_summary(df_filtered,df_all):
+    carrier_delay = (
+        df.groupby("carrier")["delay_days"]
+        .mean()
+        .sort_values(ascending=False)
+    )
 
+    total_shipments = len(df)
+    severe_delay_rate = (df["delay_days"] > 3).mean()
+    carrier_stats = (
+        df.groupby("carrier")["delay_days"]
+        .agg(["mean", "count"])
+        .sort_values(by="mean", ascending=False)
+    )
+    filtered_stats = df_filtered["delay_days"].mean()
+    overall_stats = df["delay_days"].mean()
+    prompt = f"""
+You are a supply chain analyst.
+
+Selected carrier average delay: {filtered_stats:.2f} days
+Overall average delay: {overall_stats:.2f} days
+
+Explain:
+1. Is this carrier performing better or worse than average?
+2. What risk does this indicate?
+3. What action should the operations team take?
+
+Important interpretation rules:
+- Positive delay means late arrival.
+- Negative delay means early arrival.
+- Do not describe negative delay as a risk by itself.
+
+Keep it concise and business-focused.
+"""
+
+    response = client.responses.create(
+        model="gpt-4o-mini",
+        input=prompt,
+    )
+
+    return response.output_text
 #step5-KPIs(very important)
 total = len(df)
 delay_rate = len(df[df["delay_days"]>3])/total
@@ -77,3 +127,14 @@ worst_carrier = df.groupby("carrier")["delay_days"].mean().idxmax()
 #idxmax() is “Give me the index (name) of the maximum value”
 st.write(f"Worst Carrier: {worst_carrier}")
 
+st.markdown("## 🤖 AI Insights")
+st.caption("Generate an AI-written operations summary based on current filtered shipment data.")
+if st.button("Generate AI Summary"):
+    if not os.environ.get("OPENAI_API_KEY"):
+        st.error("API key not found")
+    else:
+        with st.spinner("Thinking..."):
+            summary = generate_ai_summary(df_filtered,df_all)
+        st.markdown(summary)
+
+st.write("BOTTOM OF APP")

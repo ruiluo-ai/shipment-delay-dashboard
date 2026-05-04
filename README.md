@@ -11,6 +11,11 @@ This project analyzes shipment data to identify delay patterns and carrier perfo
 * Compare average delay across carriers
 * Explore results through an interactive Streamlit dashboard
 
+## ⚠️ Advanced Features
+
+- Context-aware AI insights (selected vs overall performance)
+- Anomaly detection using statistical threshold (mean + 2σ)
+- AI explanation of operational risks based on anomalies
 ## Key Insights
 
 * About 18% of shipments fall into the severe delay category

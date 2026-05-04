@@ -29,6 +29,9 @@ df["delay_days"] = (df["ata"]-df["eta"]).dt.days
 
 df =df.dropna(subset=["delay_days"])
 
+threshold = df["delay_days"].mean()+2*df["delay_days"].std()
+df["is_anomaly"] = df["delay_days"]>threshold
+
 carrier = st.selectbox("Select Carrier",["All"]+list(df["carrier"].unique()))
 
 #df_all-->full dataset
@@ -57,21 +60,24 @@ def generate_ai_summary(df_filtered,df_all):
     )
     filtered_stats = df_filtered["delay_days"].mean()
     overall_stats = df["delay_days"].mean()
+    anomaly_count = df_filtered["is_anomaly"].sum()
+
     prompt = f"""
 You are a supply chain analyst.
 
 Selected carrier average delay: {filtered_stats:.2f} days
 Overall average delay: {overall_stats:.2f} days
+Number of anomalous shipments: {anomaly_count}
 
 Explain:
-1. Is this carrier performing better or worse than average?
-2. What risk does this indicate?
-3. What action should the operations team take?
+1. Performance vs average
+2. Whether anomalies indicate operational issues?
+3. Recommended action
 
 Important interpretation rules:
-- Positive delay means late arrival.
-- Negative delay means early arrival.
-- Do not describe negative delay as a risk by itself.
+- Negative delay = early arrival
+- Positive delay = late arrival
+- Only treat anomalies as serious risk
 
 Keep it concise and business-focused.
 """
@@ -126,6 +132,14 @@ st.bar_chart(severe["carrier"].value_counts())
 worst_carrier = df.groupby("carrier")["delay_days"].mean().idxmax()
 #idxmax() is “Give me the index (name) of the maximum value”
 st.write(f"Worst Carrier: {worst_carrier}")
+
+#step9-Anomaly detection
+st.markdown("##⚠️ Anomaly Shipments")
+
+anomalies = df[df["is_anomaly"]]
+
+st.write(f"Number of anomalies: {len(anomalies)}")
+st.dataframe(anomalies[["carrier", "delay_days"]])
 
 st.markdown("## 🤖 AI Insights")
 st.caption("Generate an AI-written operations summary based on current filtered shipment data.")

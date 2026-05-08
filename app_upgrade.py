@@ -88,6 +88,59 @@ Keep it concise and business-focused.
     )
 
     return response.output_text
+def generate_full_report(df_filtered, df_all):
+
+    carrier_stats = (
+        df_all.groupby("carrier")["delay_days"]
+        .agg(["mean", "count"])
+        .sort_values(by="mean")
+    )
+
+    best_carrier = carrier_stats.index[0]
+    worst_carrier = carrier_stats.index[-1]
+
+    anomaly_count = df_filtered["is_anomaly"].sum()
+    total = len(df_filtered)
+    delay_rate = (df_filtered["delay_days"] > 3).mean()
+
+    prompt = f"""
+You are a supply chain operations analyst.
+
+Write a structured report.
+
+Data:
+- Total shipments: {total}
+- Severe delay rate: {delay_rate:.2%}
+- Anomalies: {anomaly_count}
+
+Carrier performance:
+{carrier_stats.to_string()}
+
+Report format:
+
+1. Overview (2-3 sentences)
+2. Carrier Performance (key findings)
+3. Risk & Anomalies (what is concerning)
+4. Recommendations (clear actions)
+
+Important facts (already computed):
+- Best performing carrier: {best_carrier}
+- Worst performing carrier: {worst_carrier}
+
+Important interpretation rules:
+- Lower delay = better performance
+- Higher delay = worse performance
+- Negative delay = early arrival (strong performance)
+- Do not describe high-delay carriers as reliable
+"""
+
+    response = client.responses.create(
+        model="gpt-4o-mini",
+        input=prompt,
+    )
+
+    return response.output_text
+
 #step5-KPIs(very important)
 total = len(df)
 delay_rate = len(df[df["delay_days"]>3])/total
@@ -151,4 +204,11 @@ if st.button("Generate AI Summary"):
             summary = generate_ai_summary(df_filtered,df_all)
         st.markdown(summary)
 
+st.markdown("## 📄 Generate Full Report")
+
+if st.button("Generate Full Report"):
+    with st.spinner("Generating report..."):
+        report = generate_full_report(df_filtered, df_all)
+
+    st.markdown(report)
 st.write("BOTTOM OF APP")

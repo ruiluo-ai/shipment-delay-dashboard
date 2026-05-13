@@ -22,11 +22,22 @@ This project analyzes shipment data to identify delay patterns and carrier perfo
 * COSCO shows the highest average delay in the sample analysis
 * Delay performance varies by carrier
 
+## 📄 Document Automation Features
+
+- Extract structured data from CBP Form 7501 PDFs
+- Parse entry numbers, summary dates, entry dates, and port codes using regex
+- Convert unstructured customs documents into structured Python dictionaries
+- Automatically append extracted shipment records into Excel tracker
+- Support reusable PDF-to-Excel workflow automation
+
 ## Tech Stack
 
 * Python
 * pandas
 * Streamlit
+* pdfplumber
+* openpyxl
+* regex(re)
 
 ## Data Note
 

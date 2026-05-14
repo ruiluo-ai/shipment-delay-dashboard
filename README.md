@@ -30,6 +30,13 @@ This project analyzes shipment data to identify delay patterns and carrier perfo
 - Automatically append extracted shipment records into Excel tracker
 - Support reusable PDF-to-Excel workflow automation
 
+## 🔄 Batch Processing Workflow
+
+- Process multiple CBP Form 7501 PDFs automatically
+- Extract structured shipment data from each document
+- Append extracted records into centralized Excel tracker
+- Support scalable PDF-to-Excel operational workflow
+
 ## Tech Stack
 
 * Python

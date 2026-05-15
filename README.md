@@ -37,6 +37,13 @@ This project analyzes shipment data to identify delay patterns and carrier perfo
 - Append extracted records into centralized Excel tracker
 - Support scalable PDF-to-Excel operational workflow
 
+## 🛡️ Robustness Features
+
+- Prevent duplicate PDF processing using existing tracker records
+- Handle extraction failures gracefully with try/except logic
+- Record processing status and error messages for failed documents
+- Support scalable operational batch workflows
+
 ## Tech Stack
 
 * Python
